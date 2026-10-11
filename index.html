@@ -179,7 +179,7 @@ function renderLapChart(){
  const seconds=sandownLaps.map(l=>{const p=l[2].split(":");return Number(p[0])*60+Number(p[1])});
  const min=290,max=600;
  const x=i=>L+(i/(sandownLaps.length-1))*innerW;
- const y=s=>T+((max-s)/(max-min))*innerH;
+ const y=s=>T+((s-min)/(max-min))*innerH;
  let svg='<svg class="lap-chart-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Sandown lap times from lap 1 to 65, in seconds">';
  [300,360,420,480,540,600].forEach(s=>{const yy=y(s);svg+='<line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" stroke="#29362b" stroke-width="1"/><text x="'+(L-8)+'" y="'+(yy+4)+'" fill="#9aa79a" font-size="10" text-anchor="end">'+Math.floor(s/60)+':'+String(s%60).padStart(2,"0")+'</text>'});
  svg+='<polyline fill="none" stroke="#95ff35" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" points="'+seconds.map((s,i)=>x(i)+','+y(s)).join(' ')+'"/>';
