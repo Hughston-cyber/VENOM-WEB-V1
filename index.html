@@ -149,9 +149,9 @@ main{padding:34px clamp(18px,4vw,56px);max-width:1500px;width:100%;margin:auto}.
   </div>
   <div class="notice">Casey Fields 2 is set up as a separate race record. No results are displayed until you upload the data. When it arrives, we’ll populate this section and keep Sandown’s results stored separately.</div>
   <div class="casey-sections">
-    <div class="info-card"><h3>Rider statistics</h3><p>Best lap, lap tally, consistency, pit time and other confirmed rider figures.</p></div>
-    <div class="info-card"><h3>Lap log</h3><p>Recorded lap-by-lap times and notes, without guessing which rider set a lap.</p></div>
-    <div class="info-card"><h3>Stint history</h3><p>Planned and actual rider changeovers, with timing differences clearly identified.</p></div>
+    <div class="info-card casey-tab-content active" data-casey-view="riders"><h3>Casey Fields 2 rider statistics</h3><p>Best lap, lap tally, consistency, pit time and other confirmed rider figures will appear here when the race data is uploaded.</p></div>
+    <div class="info-card casey-tab-content" data-casey-view="sandown" hidden><h3>Casey Fields 2 stint history</h3><p>Planned and actual rider changeovers will appear here once the schedule and recorded times are supplied.</p></div>
+    <div class="info-card casey-tab-content" data-casey-view="laps" hidden><h3>Casey Fields 2 lap log</h3><p>Recorded lap-by-lap times and notes will appear here. Lap times will not be assigned to individual riders without a reliable mapping.</p></div>
   </div>
 </div>
 <div class="stat-tabs" role="tablist" aria-label="Statistics views">
@@ -269,6 +269,24 @@ const seasonOptions=document.querySelectorAll("[data-season-track]");
 const caseyPlaceholder=document.getElementById("caseyPlaceholder");
 const statsTabs=document.querySelector(".stat-tabs");
 const sandownViews=document.querySelectorAll(".stat-view");
+const statTabLabels={
+ riders:{sandown:"Sandown rider stats",casey:"Casey rider stats"},
+ sandown:{sandown:"Sandown stints",casey:"Casey stints"},
+ laps:{sandown:"Sandown lap log",casey:"Casey lap log"}
+};
+function setStatsTabLabels(isCasey){
+ document.querySelectorAll("[data-stat-view]").forEach(function(btn){
+  const key=btn.dataset.statView;
+  btn.textContent=statTabLabels[key][isCasey?"casey":"sandown"];
+ });
+}
+function showCaseyTab(key){
+ document.querySelectorAll("[data-casey-view]").forEach(function(view){
+  const active=view.dataset.caseyView===key;
+  view.hidden=!active;
+  view.classList.toggle("active",active);
+ });
+}
 function selectSeasonTrack(option){
  const isCasey=option.dataset.seasonTrack==="casey-fields-2";
  seasonOptions.forEach(function(item){
@@ -285,9 +303,13 @@ function selectSeasonTrack(option){
  seasonDropdown.querySelector(".season-track-current").textContent=option.querySelector("span").textContent;
  seasonDropdown.open=false;
  caseyPlaceholder.hidden=!isCasey;
- statsTabs.hidden=isCasey;
+ statsTabs.hidden=false;
  sandownViews.forEach(function(view){view.hidden=isCasey});
- if(!isCasey){
+ setStatsTabLabels(isCasey);
+ if(isCasey){
+  const activeTab=document.querySelector("[data-stat-view].active")||document.querySelector("[data-stat-view='riders']");
+  if(activeTab)showCaseyTab(activeTab.dataset.statView);
+ }else{
   const activeTab=document.querySelector("[data-stat-view].active")||document.querySelector("[data-stat-view='riders']");
   if(activeTab)activeTab.click();
  }
@@ -295,8 +317,13 @@ function selectSeasonTrack(option){
 seasonOptions.forEach(function(option){
  option.addEventListener("click",function(){selectSeasonTrack(option)});
 });
-const statTabs=document.querySelectorAll("[data-stat-view]");
-statTabs.forEach(function(btn){btn.addEventListener("click",function(){statTabs.forEach(function(b){b.classList.toggle("active",b===btn)});document.querySelectorAll(".stat-view").forEach(function(v){v.classList.toggle("active",v.id==="stat-"+btn.dataset.statView)})})});
+const statTabsButtons=document.querySelectorAll("[data-stat-view]");
+statTabsButtons.forEach(function(btn){btn.addEventListener("click",function(){
+ statTabsButtons.forEach(function(b){b.classList.toggle("active",b===btn)});
+ const isCasey=seasonDropdown.querySelector(".season-track-current").textContent==="Casey Fields 2";
+ if(isCasey){showCaseyTab(btn.dataset.statView);return;}
+ document.querySelectorAll(".stat-view").forEach(function(v){v.classList.toggle("active",v.id==="stat-"+btn.dataset.statView)});
+})});
 const sandownLaps=[[1,"9:07:06","07:01.2",""],[2,"9:13:04","05:58.9",""],[3,"9:19:11","06:06.1",""],[4,"9:25:05","05:54.4",""],[5,"9:31:08","06:03.5",""],[6,"9:37:19","06:10.5",""],[7,"9:43:46","06:27.3",""],[8,"9:52:26","08:39.9",""],[9,"10:00:00","07:34.1",""],[10,"10:07:50","07:49.5",""],[11,"10:15:30","07:40.0",""],[12,"10:23:01","07:31.2",""],[13,"10:30:31","07:29.5",""],[14,"10:40:03","09:32.3",""],[15,"10:47:39","07:35.7",""],[16,"10:54:41","07:02.8",""],[17,"11:01:51","07:09.3",""],[18,"11:08:59","07:08.0",""],[19,"11:16:12","07:13.0",""],[20,"11:23:34","07:22.7",""],[21,"11:31:34","07:59.8",""],[22,"11:37:58","06:23.5",""],[23,"11:44:19","06:21.7",""],[24,"11:50:44","06:24.7",""],[25,"11:57:35","06:51.0",""],[26,"12:04:23","06:48.1",""],[27,"12:11:25","07:01.8",""],[28,"12:19:00","07:34.8",""],[29,"12:25:39","06:39.3",""],[30,"12:32:00","06:21.2",""],[31,"12:38:47","06:46.3",""],[32,"12:47:03","08:15.9",""],[33,"12:53:16","06:14.0",""],[34,"12:59:29","06:12.4",""],[35,"13:05:53","06:23.7",""],[36,"13:12:15","06:22.0",""],[37,"13:20:13","07:58.8",""],[38,"13:26:12","05:58.3",""],[39,"13:32:09","05:56.9",""],[40,"13:37:52","05:43.1",""],[41,"13:44:04","06:12.1",""],[42,"13:50:08","06:04.3",""],[43,"13:56:13","06:04.6",""],[44,"14:02:30","06:16.9",""],[45,"14:08:39","06:09.6",""],[46,"14:14:43","06:03.3",""],[47,"14:21:09","06:26.8",""],[48,"14:26:07","04:57.9",""],[49,"14:31:15","05:07.7",""],[50,"14:36:31","05:15.6",""],[51,"14:41:50","05:19.2",""],[52,"14:47:06","05:16.2",""],[53,"14:52:26","05:19.5",""],[54,"14:58:19","05:53.7",""],[55,"15:05:34","07:14.5",""],[56,"15:10:40","05:06.2",""],[57,"15:15:35","04:55.0",""],[58,"15:22:39","07:04.2","Roll (as marked in source)"],[59,"15:28:05","05:26.1",""],[60,"15:33:38","05:32.5",""],[61,"15:39:23","05:44.8",""],[62,"15:45:22","05:59.0",""],[63,"15:51:18","05:56.9",""],[64,"15:57:22","06:03.6",""],[65,"16:03:14","05:51.6",""]];
 function renderLapRows(){const q=(document.getElementById("lapSearch").value||"").trim().toLowerCase();const rows=sandownLaps.filter(function(l){return (l.join(" ")).toLowerCase().includes(q)});document.getElementById("lapRows").innerHTML=rows.map(function(l){return "<tr><td>"+l[0]+"</td><td>"+l[1]+"</td><td>"+l[2]+"</td><td>"+(l[3]||"—")+"</td></tr>"}).join("");document.getElementById("lapEmpty").style.display=rows.length?"none":"block"}
 if(document.getElementById("lapSearch")){document.getElementById("lapSearch").addEventListener("input",renderLapRows);renderLapRows()}
