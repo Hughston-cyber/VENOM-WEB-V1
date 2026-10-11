@@ -1,15 +1,24 @@
-# Viper AI — Team Venom Command Centre
+# Viper AI — Team Venom HPR
 
-Responsive static website prototype for Team Venom HPR planning.
+Viper AI is a dark, venom-green operations dashboard prototype for Team Venom.
 
 ## Features
-- Black and venom-green command-centre interface
-- Dashboard, chat demo, action list, team roster and race checklist
-- Browser-local task storage and roster CSV export
-- Responsive desktop and mobile layouts
+- Responsive dashboard and quick navigation
+- Local task board with add, complete, and delete actions
+- Viper Chat demo with built-in responses (not a connected AI model)
+- Editable sample team roster and CSV export
+- Race-day checklist
+- Browser-local persistence with `localStorage`
 
-## Deploy
-A GitHub Actions workflow publishes the website to GitHub Pages. After the first workflow run, open Settings → Pages and choose GitHub Actions as the source if prompted.
+## Run locally
+Open `index.html` in a modern browser. No build tools or dependencies are required.
 
-## Limitations
-This is a front-end prototype, not a production AI service. It has no authentication, server, shared database, live AI API, scheduled automations, external integrations or official/live HPR data. Roster names are sample data. Never put API keys in browser code; real AI requires a secure backend.
+## GitHub Pages
+This repository includes a GitHub Actions workflow that publishes the root of the repository to GitHub Pages. In GitHub, open **Settings → Pages** and ensure the publishing source is **GitHub Actions** if prompted. After the first workflow succeeds, the site should be available at:
+
+https://hughston-cyber.github.io/Viper-AI/
+
+## Important limitations
+This is a front-end prototype. It does not have user accounts, a shared database, background automations, or a real AI provider connection. Data stored in localStorage only exists in the browser/device where it was entered.
+
+Never place private API keys or secrets in client-side files. A real AI connection should be implemented through a secure backend, with authentication, access controls, and appropriate privacy protections.
