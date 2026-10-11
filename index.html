@@ -26,6 +26,24 @@ main{padding:34px clamp(18px,4vw,56px);max-width:1500px;width:100%;margin:auto}.
 @media(max-width:1000px){.tiles,.member-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.shell{display:block;padding-bottom:70px}.sidebar{position:fixed;z-index:10;bottom:0;left:0;right:0;height:66px;border-right:0;border-top:1px solid var(--line);padding:7px;background:#090d0af5;display:block}.brand,.sidefoot,.navlabel{display:none}.nav{display:flex;justify-content:space-around;gap:2px}.nav button{display:flex;flex-direction:column;gap:2px;justify-content:center;padding:5px 3px;font-size:10px;flex:1;text-align:center}.nav .ico{font-size:18px}main{padding:23px 15px}.system-pill{display:none}.tiles,.info-grid{grid-template-columns:1fr 1fr;gap:9px}.tile{min-height:150px;padding:15px}.hero{padding:24px}.roster th,.roster td{padding:9px 5px;font-size:11px}.formrow{flex-direction:column}}
 @media(max-width:390px){.tiles,.info-grid,.member-grid,.stat-grid{grid-template-columns:1fr}.schedule-row{grid-template-columns:36px 1fr}.schedule-row .schedule-time{grid-column:2}}
+
+/* Season and track dropdown */
+.season-picker{margin:16px 0 12px}
+.season-dropdown{position:relative;width:min(100%,360px)}
+.season-dropdown summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;padding:13px 15px;border:1px solid #40513a;border-radius:10px;background:#101711;color:var(--soft);font-size:14px;font-weight:800}
+.season-dropdown summary::-webkit-details-marker{display:none}
+.season-year{color:var(--green)}
+.season-chevron{color:var(--muted);font-size:20px;line-height:1}
+.season-track-current{flex:1}
+.season-caret{color:var(--muted);font-size:16px}
+.season-dropdown[open] summary{border-color:var(--green);border-radius:10px 10px 0 0}
+.season-menu{padding:8px;border:1px solid #40513a;border-top:0;border-radius:0 0 10px 10px;background:#0b100c}
+.season-menu-year{padding:8px 10px 7px;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+.season-option{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:11px 12px;border:1px solid transparent;border-radius:7px;background:#172116;color:var(--soft);font-size:13px;font-weight:750;cursor:pointer}
+.season-option.active{border-color:#40513a;color:var(--green)}
+.season-check{color:var(--green)}
+.season-caption{font-size:11px;color:var(--muted);margin:7px 2px 0}
+
 </style>
 </head>
 <body>
@@ -101,6 +119,16 @@ main{padding:34px clamp(18px,4vw,56px);max-width:1500px;width:100%;margin:auto}.
 <div class="stat-kpi"><span>Fastest listed Sandown time</span><strong>3:21</strong><small>Dylan — Sandown rider summary</small></div>
 </div>
 <div class="notice">Data source: all statistics on this dashboard are from Sandown. The rider summary, stint history and 65-lap log are presented as Sandown records. Lap-log times are not assigned to individual riders because the supplied information does not establish a reliable lap-to-rider mapping. Casey Fields 2 results will replace this Sandown baseline when supplied.</div>
+<div class="season-picker">
+  <details class="season-dropdown">
+    <summary><span class="season-year">2026</span><span class="season-chevron">›</span><span class="season-track-current">Sandown</span><span class="season-caret">⌄</span></summary>
+    <div class="season-menu">
+      <div class="season-menu-year">2026</div>
+      <button type="button" class="season-option active" data-season-track="sandown"><span>Sandown</span><span class="season-check">✓</span></button>
+    </div>
+  </details>
+  <p class="season-caption">Choose a year, then a race or track to view its results.</p>
+</div>
 <div class="stat-tabs" role="tablist" aria-label="Statistics views">
 <button class="active" type="button" data-stat-view="riders">Sandown rider stats</button>
 <button type="button" data-stat-view="sandown">Sandown stints</button>
@@ -211,6 +239,14 @@ document.getElementById("closeMemberRecord").addEventListener("click",closeMembe
 document.getElementById("memberModal").addEventListener("click",function(e){if(e.target.id==="memberModal")closeMemberRecord()});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMemberRecord()});
 
+const seasonDropdown=document.querySelector(".season-dropdown");
+document.querySelectorAll("[data-season-track]").forEach(function(option){
+ option.addEventListener("click",function(){
+  document.querySelectorAll("[data-season-track]").forEach(function(item){item.classList.toggle("active",item===option)});
+  seasonDropdown.querySelector(".season-track-current").textContent=option.querySelector("span").textContent;
+  seasonDropdown.open=false;
+ });
+});
 const statTabs=document.querySelectorAll("[data-stat-view]");
 statTabs.forEach(function(btn){btn.addEventListener("click",function(){statTabs.forEach(function(b){b.classList.toggle("active",b===btn)});document.querySelectorAll(".stat-view").forEach(function(v){v.classList.toggle("active",v.id==="stat-"+btn.dataset.statView)})})});
 const sandownLaps=[[1,"9:07:06","07:01.2",""],[2,"9:13:04","05:58.9",""],[3,"9:19:11","06:06.1",""],[4,"9:25:05","05:54.4",""],[5,"9:31:08","06:03.5",""],[6,"9:37:19","06:10.5",""],[7,"9:43:46","06:27.3",""],[8,"9:52:26","08:39.9",""],[9,"10:00:00","07:34.1",""],[10,"10:07:50","07:49.5",""],[11,"10:15:30","07:40.0",""],[12,"10:23:01","07:31.2",""],[13,"10:30:31","07:29.5",""],[14,"10:40:03","09:32.3",""],[15,"10:47:39","07:35.7",""],[16,"10:54:41","07:02.8",""],[17,"11:01:51","07:09.3",""],[18,"11:08:59","07:08.0",""],[19,"11:16:12","07:13.0",""],[20,"11:23:34","07:22.7",""],[21,"11:31:34","07:59.8",""],[22,"11:37:58","06:23.5",""],[23,"11:44:19","06:21.7",""],[24,"11:50:44","06:24.7",""],[25,"11:57:35","06:51.0",""],[26,"12:04:23","06:48.1",""],[27,"12:11:25","07:01.8",""],[28,"12:19:00","07:34.8",""],[29,"12:25:39","06:39.3",""],[30,"12:32:00","06:21.2",""],[31,"12:38:47","06:46.3",""],[32,"12:47:03","08:15.9",""],[33,"12:53:16","06:14.0",""],[34,"12:59:29","06:12.4",""],[35,"13:05:53","06:23.7",""],[36,"13:12:15","06:22.0",""],[37,"13:20:13","07:58.8",""],[38,"13:26:12","05:58.3",""],[39,"13:32:09","05:56.9",""],[40,"13:37:52","05:43.1",""],[41,"13:44:04","06:12.1",""],[42,"13:50:08","06:04.3",""],[43,"13:56:13","06:04.6",""],[44,"14:02:30","06:16.9",""],[45,"14:08:39","06:09.6",""],[46,"14:14:43","06:03.3",""],[47,"14:21:09","06:26.8",""],[48,"14:26:07","04:57.9",""],[49,"14:31:15","05:07.7",""],[50,"14:36:31","05:15.6",""],[51,"14:41:50","05:19.2",""],[52,"14:47:06","05:16.2",""],[53,"14:52:26","05:19.5",""],[54,"14:58:19","05:53.7",""],[55,"15:05:34","07:14.5",""],[56,"15:10:40","05:06.2",""],[57,"15:15:35","04:55.0",""],[58,"15:22:39","07:04.2","Roll (as marked in source)"],[59,"15:28:05","05:26.1",""],[60,"15:33:38","05:32.5",""],[61,"15:39:23","05:44.8",""],[62,"15:45:22","05:59.0",""],[63,"15:51:18","05:56.9",""],[64,"15:57:22","06:03.6",""],[65,"16:03:14","05:51.6",""]];
