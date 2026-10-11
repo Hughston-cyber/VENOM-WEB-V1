@@ -44,6 +44,15 @@ main{padding:34px clamp(18px,4vw,56px);max-width:1500px;width:100%;margin:auto}.
 .season-check{color:var(--green)}
 .season-caption{font-size:11px;color:var(--muted);margin:7px 2px 0}
 
+
+.casey-placeholder{margin-top:16px}
+.season-status{font-size:10px;color:var(--muted);font-weight:600}
+.season-status-pill{flex-shrink:0;border:1px solid #40513a;border-radius:999px;padding:6px 9px;color:#b6cba9;font-size:10px;font-weight:800;letter-spacing:.04em}
+.casey-sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.casey-sections .info-card{margin:0}
+.casey-sections h3{margin-top:0}
+@media(max-width:650px){.casey-sections{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -125,9 +134,25 @@ main{padding:34px clamp(18px,4vw,56px);max-width:1500px;width:100%;margin:auto}.
     <div class="season-menu">
       <div class="season-menu-year">2026</div>
       <button type="button" class="season-option active" data-season-track="sandown"><span>Sandown</span><span class="season-check">✓</span></button>
+      <button type="button" class="season-option" data-season-track="casey-fields-2"><span>Casey Fields 2</span><span class="season-status">Awaiting data</span></button>
     </div>
   </details>
-  <p class="season-caption">Choose a year, then a race or track to view its results.</p>
+  <p class="season-caption">2026 race records · choose a track to view its results.</p>
+</div>
+<div class="casey-placeholder" id="caseyPlaceholder" hidden>
+  <div class="sectionhead"><div><h2>Casey Fields 2</h2><p>2026 race record · ready for the next dataset.</p></div><span class="season-status-pill">Awaiting data</span></div>
+  <div class="stat-grid">
+    <div class="stat-kpi"><span>Rider results</span><strong>—</strong><small>Not uploaded yet</small></div>
+    <div class="stat-kpi"><span>Lap records</span><strong>—</strong><small>Not uploaded yet</small></div>
+    <div class="stat-kpi"><span>Stint history</span><strong>—</strong><small>Not uploaded yet</small></div>
+    <div class="stat-kpi"><span>Best lap</span><strong>—</strong><small>Track-specific result pending</small></div>
+  </div>
+  <div class="notice">Casey Fields 2 is set up as a separate race record. No results are displayed until you upload the data. When it arrives, we’ll populate this section and keep Sandown’s results stored separately.</div>
+  <div class="casey-sections">
+    <div class="info-card"><h3>Rider statistics</h3><p>Best lap, lap tally, consistency, pit time and other confirmed rider figures.</p></div>
+    <div class="info-card"><h3>Lap log</h3><p>Recorded lap-by-lap times and notes, without guessing which rider set a lap.</p></div>
+    <div class="info-card"><h3>Stint history</h3><p>Planned and actual rider changeovers, with timing differences clearly identified.</p></div>
+  </div>
 </div>
 <div class="stat-tabs" role="tablist" aria-label="Statistics views">
 <button class="active" type="button" data-stat-view="riders">Sandown rider stats</button>
@@ -240,12 +265,35 @@ document.getElementById("memberModal").addEventListener("click",function(e){if(e
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMemberRecord()});
 
 const seasonDropdown=document.querySelector(".season-dropdown");
-document.querySelectorAll("[data-season-track]").forEach(function(option){
- option.addEventListener("click",function(){
-  document.querySelectorAll("[data-season-track]").forEach(function(item){item.classList.toggle("active",item===option)});
-  seasonDropdown.querySelector(".season-track-current").textContent=option.querySelector("span").textContent;
-  seasonDropdown.open=false;
+const seasonOptions=document.querySelectorAll("[data-season-track]");
+const caseyPlaceholder=document.getElementById("caseyPlaceholder");
+const statsTabs=document.querySelector(".stat-tabs");
+const sandownViews=document.querySelectorAll(".stat-view");
+function selectSeasonTrack(option){
+ const isCasey=option.dataset.seasonTrack==="casey-fields-2";
+ seasonOptions.forEach(function(item){
+  item.classList.toggle("active",item===option);
+  const check=item.querySelector(".season-check");
+  if(check)check.remove();
+  if(item===option){
+   const mark=document.createElement("span");
+   mark.className="season-check";
+   mark.textContent="✓";
+   item.appendChild(mark);
+  }
  });
+ seasonDropdown.querySelector(".season-track-current").textContent=option.querySelector("span").textContent;
+ seasonDropdown.open=false;
+ caseyPlaceholder.hidden=!isCasey;
+ statsTabs.hidden=isCasey;
+ sandownViews.forEach(function(view){view.hidden=isCasey});
+ if(!isCasey){
+  const activeTab=document.querySelector("[data-stat-view].active")||document.querySelector("[data-stat-view='riders']");
+  if(activeTab)activeTab.click();
+ }
+}
+seasonOptions.forEach(function(option){
+ option.addEventListener("click",function(){selectSeasonTrack(option)});
 });
 const statTabs=document.querySelectorAll("[data-stat-view]");
 statTabs.forEach(function(btn){btn.addEventListener("click",function(){statTabs.forEach(function(b){b.classList.toggle("active",b===btn)});document.querySelectorAll(".stat-view").forEach(function(v){v.classList.toggle("active",v.id==="stat-"+btn.dataset.statView)})})});
