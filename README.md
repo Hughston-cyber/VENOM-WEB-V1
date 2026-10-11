@@ -1,24 +1,34 @@
 # Viper AI — Team Venom HPR
 
-Viper AI is a dark, venom-green operations dashboard prototype for Team Venom.
+Viper AI is Team Venom's information hub. The public GitHub Pages site is only a landing page; the private dashboard is served by the Cloudflare Worker.
 
-## Features
-- Responsive dashboard and quick navigation
-- Local task board with add, complete, and delete actions
-- Viper Chat demo with built-in responses (not a connected AI model)
-- Editable sample team roster and CSV export
-- Race-day checklist
-- Browser-local persistence with `localStorage`
+## Live sites
 
-## Run locally
-Open `index.html` in a modern browser. No build tools or dependencies are required.
+- Public landing page: https://hughston-cyber.github.io/Viper-AI/
+- Secure team hub: https://viper-ai.hughfletcher.workers.dev/
 
-## GitHub Pages
-This repository includes a GitHub Actions workflow that publishes the root of the repository to GitHub Pages. In GitHub, open **Settings → Pages** and ensure the publishing source is **GitHub Actions** if prompted. After the first workflow succeeds, the site should be available at:
+## Access controls
 
-https://hughston-cyber.github.io/Viper-AI/
+- Members must register using a one-use invitation code.
+- New accounts remain pending until the Team Captain approves them.
+- Rider statistics, member information, race information and captain controls are served only after server-side authentication.
+- The captain dashboard can approve/reject account requests, create and revoke invitation codes, and disable/restore member accounts.
+- Passwords are hashed with PBKDF2; session tokens are stored as hashes and issued in Secure, HttpOnly, SameSite cookies.
+- Invitation codes are stored as hashes and are single-use with an expiry.
+- Private pages use no-store caching and are excluded from indexing.
 
-## Important limitations
-This is a front-end prototype. It does not have user accounts, a shared database, background automations, or a real AI provider connection. Data stored in localStorage only exists in the browser/device where it was entered.
+## Infrastructure
 
-Never place private API keys or secrets in client-side files. A real AI connection should be implemented through a secure backend, with authentication, access controls, and appropriate privacy protections.
+- Front end and authentication API: Cloudflare Worker `viper-ai`
+- Database: Cloudflare D1 `viper-ai-auth`
+- Public landing page: GitHub Pages
+
+## First-time captain setup
+
+Use the one-time setup code provided directly to the Team Captain at `/setup-captain`. Choose a strong password of at least 12 characters. The setup code is deleted from the database after the captain account is created and cannot be reused.
+
+Do not put setup codes, passwords, session tokens or API secrets in this repository. If the one-time setup code has been lost before use, generate a new hash in the D1 `app_config` table and provide a new code securely.
+
+## Important
+
+This project uses server-side authorization. Do not re-add member or rider records to the public GitHub Pages landing page or other public static assets. Add new private data to the authenticated application or protected API instead.
